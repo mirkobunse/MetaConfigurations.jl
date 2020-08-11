@@ -2,7 +2,7 @@
 
 # MetaConfigurations.jl
 
-A meta-configuration defines a set of configurations as a single, more abstract and comprehensive configuration.
+Define a set of configurations as a single, more abstract and comprehensive meta-configuration.
 
 ## Motivation
 
