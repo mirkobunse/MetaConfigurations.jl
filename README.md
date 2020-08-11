@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mirkobunse/MetaConfigurations.jl.svg?branch=master)](https://travis-ci.org/mirkobunse/MetaConfigurations.jl)
+[![Build Status](https://travis-ci.org/mirkobunse/MetaConfigurations.jl.svg?branch=master)](https://travis-ci.org/mirkobunse/MetaConfigurations.jl) [![codecov](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl)
 
 # MetaConfigurations.jl
 
