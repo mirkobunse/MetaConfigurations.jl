@@ -1,8 +1,12 @@
 [![Build Status](https://travis-ci.org/mirkobunse/MetaConfigurations.jl.svg?branch=master)](https://travis-ci.org/mirkobunse/MetaConfigurations.jl)
 
+# MetaConfigurations.jl
+
 A meta-configuration defines a set of configurations as a single, more abstract and comprehensive configuration.
 
-For example, assume you want to describe four experiments, each of which consists of a combination of two parameters.
+## Motivation
+
+Assume you want to describe four experiments, each of which consists of a combination of two parameters.
 
 ```
 experiments:
@@ -20,7 +24,7 @@ experiments:
     beta: 97.5%
 ```
 
-MetaConfigurations.jl can derive these combinations from a more abstract and comprehensive representation, a meta-configuration:
+MetaConfigurations.jl can derive these combinations from a more abstract and comprehensive representation, which we call a meta-configuration:
 
 ```
 experiments:
