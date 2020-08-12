@@ -1,0 +1,13 @@
+simple = "blaw"   # just some property
+
+# two arrays to be expanded during tests
+array = [1, 2, 3]
+complexarray = [{a = 1, b = 2}, {a = 11, b = 12}, {a = 21, b = 22}]
+
+subexpand = {x = "x", y = [ "y1", "y2", "y3" ]}
+subexpandlist = [{x = "x", y = [ "y1", "y2", "y3" ]}, {x = "X", P = [ "P1", "P2", "P3" ]}]
+
+# test property interpolation
+inter = "blaw-$(simple)"
+multi = "blaw-$(simple)-$(simple)"
+kwarg = "blaw-$(arg)"
