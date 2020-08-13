@@ -35,6 +35,15 @@ end
 struct FileType{x} end
 FileType(x::Symbol) = FileType{x}()
 
+function filetype(filename::AbstractString)
+    extension_split = split(basename(filename), ".")
+    if length(extension_split) < 2
+        throw(ArgumentError("filename=\"$filename\" has no extension"))
+    end
+    extension = lowercase(extension_split[end])
+    return FileType(Symbol(extension))
+end
+
 
 """
     parsefile(filename)
@@ -53,14 +62,8 @@ To which parser `parsefile` delegates depends on the `filename` extension.
     using YAML
     cfg = parsefile("foobar.yml") # now it works
 """
-function parsefile(filename::AbstractString)
-    extension_split = split(basename(filename), ".")
-    if length(extension_split) < 2
-        throw(ArgumentError("filename=\"$filename\" has no extension"))
-    end
-    extension = lowercase(extension_split[end])
-    return parsefile(FileType(Symbol(extension)), filename)
-end
+parsefile(filename::AbstractString) =
+    parsefile(filetype(filename), filename)
 
 parsefile(::FileType{x}, filename::AbstractString) where x =
     throw(ArgumentError("No parser loaded for the file name extension .$x"))
