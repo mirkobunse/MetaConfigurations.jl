@@ -111,7 +111,7 @@ No matter which syntax is used, all additional keys are being converted to `Stri
     patch(cfg, "-2" => -2)          # pair syntax (more versatile)
     patch(cfg, "c"=>"foo"; d="bar") # combination of both
 """
-patch(conf::AbstractDict{K, V}, args::Pair{K, V}...; kwargs...) where {K <: Any, V <: Any} =
+patch(conf::AbstractDict, args::Pair...; kwargs...) =
     Dict(conf..., args..., [string(k) => v for (k, v) in kwargs]...)
 
 
@@ -133,7 +133,7 @@ The `property` may be a vector specifying a root-to-leaf path in the configurati
 @doc _INTERPOLATE_DOC interpolate
 @doc _INTERPOLATE_DOC interpolate!
 
-function interpolate(conf::Dict{Any,Any}, property::AbstractArray; kwargs...)
+function interpolate(conf::AbstractDict, property::AbstractVector; kwargs...)
     replace(_getindex(conf, property...), r"\$\([a-zA-Z_]+\)" => s -> begin
         s = s[3:end-1] # remove leading '$' and enclosing brackets
         if haskey(conf, s)
@@ -146,13 +146,13 @@ function interpolate(conf::Dict{Any,Any}, property::AbstractArray; kwargs...)
     end)
 end
 
-interpolate(conf::Dict{Any,Any}, property::Any; kwargs...) =
+interpolate(conf::AbstractDict, property::Any; kwargs...) =
     interpolate(conf, [property]; kwargs...)
 
-interpolate!(conf::Dict{Any,Any}, property::AbstractArray; kwargs...) =
+interpolate!(conf::AbstractDict, property::AbstractVector; kwargs...) =
     _setindex!(conf, interpolate(conf, property; kwargs...), property...)
 
-interpolate!(conf::Dict{Any,Any}, property::Any; kwargs...) =
+interpolate!(conf::AbstractDict, property::Any; kwargs...) =
     interpolate!(conf, [property]; kwargs...)
 
 
@@ -167,11 +167,11 @@ Thus, a vector of configurations is returned, with all elements similar to the o
 `configuration` but each containing another value of the `property`. The `property` may be
 a vector specifying a root-to-leaf path in the configuration tree.
 """
-expand(config::Dict{Any,Any}, property::Any) =
+expand(config::AbstractDict, property::Any) =
     [ Dict{Any,Any}(config..., property => v) for v in _getindex(config, property) ]
 
 # deeper in the configuration tree, it gets slightly more complex
-expand(config::Dict{Any,Any}, property::AbstractArray) =
+expand(config::AbstractDict, property::AbstractVector) =
     [ begin
         c = deepcopy(config)
         _setindex!(c, v, property...)
@@ -179,12 +179,12 @@ expand(config::Dict{Any,Any}, property::AbstractArray) =
     end for v in vcat(_getindex(config, property...)...) ]
 
 # multiple expansions
-expand(config::Dict{Any,Any}, properties::Any...) = # Any also matches AbstractArrays
+expand(config::AbstractDict, properties::Any...) = # Any also matches AbstractVectors
     vcat([ expand(expansion, properties[2:end]...) for expansion in expand(config, properties[1]) ]...)
 
 # functions that complement the usual indexing with varargs
 # (overriding Base.getindex and Base.setindex would screw up these methods)
-@inbounds _getindex(val::Dict, keys::Any...) =
+@inbounds _getindex(val::AbstractDict, keys::Any...) =
     if length(keys) > 1
         _getindex(val[keys[1]], keys[2:end]...) # descend into the val[keys[1]] sub-tree
     elseif haskey(val, keys[1])
@@ -193,17 +193,17 @@ expand(config::Dict{Any,Any}, properties::Any...) = # Any also matches AbstractA
         Any[nothing] # return a dummy value - this will never be set (see _setindex! below)
     end
 
-@inbounds _getindex(arr::AbstractArray, keys::Any...) =
+@inbounds _getindex(arr::AbstractVector, keys::Any...) =
     [ try _getindex(val, keys...) catch; end for val in arr ]
 
-@inbounds _setindex!(val::Dict, value::Any, keys::Any...) = 
+@inbounds _setindex!(val::AbstractDict, value::Any, keys::Any...) = 
     if length(keys) > 1
         _setindex!(val[keys[1]], value, keys[2:end]...)
     elseif haskey(val, keys[1]) # only update existing mappings because expansion never adds new mappings
         val[keys[1]] = value
     end
 
-@inbounds _setindex!(arr::AbstractArray, value::Any, keys::Any...) =
+@inbounds _setindex!(arr::AbstractVector, value::Any, keys::Any...) =
     [ try _setindex!(val, value, keys...) catch; end for val in arr ]
 
 end # module
