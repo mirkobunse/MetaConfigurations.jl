@@ -3,11 +3,9 @@ uuid = "b3204efc-440b-4852-a818-08d33e4dcc95"
 authors = ["Mirko Bunse <mirko.bunse@cs.tu-dortmund.de>"]
 version = "0.1.0"
 
-[deps]
-YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [targets]
-test = ["Test"]
+test = ["Test", "YAML"]

@@ -21,26 +21,27 @@
 # 
 module MetaConfigurations
 
-using YAML
-export load_file, expand, interpolate, interpolate!
+export patch, expand, interpolate, interpolate!
 
 """
-    load_file(filename, more_constrictors=nothing; kwargs...)
+    patch(configuration, pair_patches...; kwarg_patches...)
 
-See `YAML.load_file`, which is extended here by keyword arguments.
+Each of the patch arguments defines an additional key-value pair
+in a copy of the `configuration`.
 
-You can specify additional configurations with the keyword arguments. For example, if you
-run `load_file("bla.yml", more = "stuff")`, you read the `bla.yml` file and set the `more`
-property to `stuff`. 
+The pair patch syntax allows keys of arbitrary types,
+while the keyword argument syntax can only handle proper `Symbol` instances.
+No matter which syntax is used, all additional keys are being converted to `String`s.
+
+# Examples
+
+    cfg = Dict("a" => 1, "b" => 2)
+    patch(cfg, c = 3)               # keyword argument syntax
+    patch(cfg, "-2" => -2)          # pair syntax (more versatile)
+    patch(cfg, "c"=>"foo"; d="bar") # combination of both
 """
-function load_file(filename::AbstractString, more_constructors::YAML._constructor=nothing;
-                   kwargs...)
-    config = YAML.load_file(filename, more_constructors)
-    for (k, v) in kwargs
-        config[string(k)] = v
-    end
-    return config
-end
+patch(conf::AbstractDict{K, V}, args::Pair{K, V}...; kwargs...) where {K <: Any, V <: Any} =
+    Dict(conf..., args..., [string(k) => v for (k, v) in kwargs]...)
 
 
 _INTERPOLATE_DOC = """
