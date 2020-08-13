@@ -22,7 +22,7 @@
 module MetaConfigurations
 
 using Requires
-export parsefile, patch, expand, interpolate, interpolate!
+export parsefile, save, patch, expand, interpolate, interpolate!
 
 
 # load dynamic dependencies
