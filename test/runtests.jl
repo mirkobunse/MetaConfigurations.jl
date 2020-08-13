@@ -1,4 +1,4 @@
-using MetaConfigurations, Test, YAML
+using MetaConfigurations, Test, YAML, JSON
 
 # expand the properties 'array' and 'complexarray' in the test configuration
 c = MetaConfigurations.parsefile("test.yml") # load the test file
@@ -38,6 +38,12 @@ c = MetaConfigurations.patch(
 c = MetaConfigurations.parsefile("test.yml")
 filename = tempname() * ".yml"
 MetaConfigurations.save(filename, c) # write to a temporary file
+parsed = MetaConfigurations.parsefile(filename)
+rm(filename) # cleanup
+@test parsed == c
+
+filename = tempname() * ".json" # the same for JSON
+MetaConfigurations.save(filename, c)
 parsed = MetaConfigurations.parsefile(filename)
 rm(filename) # cleanup
 @test parsed == c

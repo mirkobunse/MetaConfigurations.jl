@@ -28,6 +28,7 @@ export parsefile, patch, expand, interpolate, interpolate!
 # load dynamic dependencies
 function __init__()
     @require YAML="ddb6d928-2868-570f-bddf-ab3f9cf99eb6" include("yaml.jl")
+    @require JSON="682c06a0-de6a-54ab-a142-c8b1cf79cde6" include("json.jl")
 end
 
 
