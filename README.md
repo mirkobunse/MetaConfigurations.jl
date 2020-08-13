@@ -4,6 +4,9 @@
 
 Define a set of configurations as a single, more abstract and comprehensive meta-configuration.
 
+Besides providing functions for manipulating configurations, MetaConfigurations.jl is also a meta package for a common API through which configuration file handlers like [JSON.jl](https://github.com/JuliaIO/JSON.jl) and [YAML.jl](https://github.com/JuliaData/YAML.jl) are unified.
+
+
 ## Motivation
 
 Assume you want to describe four experiments, each of which consists of a combination of two parameters.

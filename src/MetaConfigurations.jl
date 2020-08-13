@@ -21,7 +21,50 @@
 # 
 module MetaConfigurations
 
-export patch, expand, interpolate, interpolate!
+using Requires
+export parsefile, patch, expand, interpolate, interpolate!
+
+
+# load dynamic dependencies
+function __init__()
+    @require YAML="ddb6d928-2868-570f-bddf-ab3f9cf99eb6" include("yaml.jl")
+end
+
+
+# a value type that used to dispatch on file name extensions
+struct FileType{x} end
+FileType(x::Symbol) = FileType{x}()
+
+
+"""
+    parsefile(filename)
+
+Parse a configuration file into a nested `Dict`.
+
+Parsing a file requires a corresponding parser package,
+like `YAML.jl` or `JSON.jl`, to be loaded.
+To which parser `parsefile` delegates depends on the `filename` extension.
+
+# Examples
+
+    using MetaConfigurations
+    cfg = parsefile("foobar.yml") # breaks
+
+    using YAML
+    cfg = parsefile("foobar.yml") # now it works
+"""
+function parsefile(filename::AbstractString)
+    extension_split = split(basename(filename), ".")
+    if length(extension_split) < 2
+        throw(ArgumentError("filename=\"$filename\" has no extension"))
+    end
+    extension = lowercase(extension_split[end])
+    return parsefile(FileType(Symbol(extension)), filename)
+end
+
+parsefile(::FileType{x}, filename::AbstractString) where x =
+    throw(ArgumentError("No parser loaded for the file name extension .$x"))
+
 
 """
     patch(configuration, pair_patches...; kwarg_patches...)

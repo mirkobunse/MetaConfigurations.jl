@@ -1,7 +1,7 @@
 using MetaConfigurations, Test, YAML
 
 # expand the properties 'array' and 'complexarray' in the test configuration
-c = YAML.load_file("test.yml") # load the test file
+c = MetaConfigurations.parsefile("test.yml") # load the test file
 @test typeof(c["array"]) <: Array
 @test eltype(c["array"]) <: Int
 @test typeof(c["complexarray"]) <: Array
@@ -24,7 +24,7 @@ testexpansion(c, "complexarray", "array")
 
 # test patching
 c = MetaConfigurations.patch(
-    YAML.load_file("test.yml"),
+    MetaConfigurations.parsefile("test.yml"),
     a = 3,
     b = "5",
     c = [1, 2, 3]
@@ -34,15 +34,15 @@ c = MetaConfigurations.patch(
 @test c["c"] == [1, 2, 3]
 
 # test writing to files by parsing the output back again
-c = YAML.load_file("test.yml")
+c = MetaConfigurations.parsefile("test.yml")
 filename = tempname() * ".yml"
 YAML.write_file(filename, c) # write to temporary file
-parsed = YAML.load_file(filename)
+parsed = MetaConfigurations.parsefile(filename)
 rm(filename) # cleanup
 @test parsed == c
 
 # test writing to files with prefix
-c = YAML.load_file("test.yml")
+c = MetaConfigurations.parsefile("test.yml")
 filename = tempname() * ".yml"
 prfx = """
 # this is a multiline
@@ -58,12 +58,12 @@ for (i, l) in enumerate(eachline(filename))
         break
     end
 end
-parsed = YAML.load_file(filename)
+parsed = MetaConfigurations.parsefile(filename)
 rm(filename) # cleanup
 @test parsed == c
 
 # test sub-expansion
-c = YAML.load_file("test.yml")
+c = MetaConfigurations.parsefile("test.yml")
 ce = MetaConfigurations.expand(c, ["subexpand", "y"])
 @test typeof(ce) <: Array
 @test length(ce) == length(c["subexpand"]["y"])
@@ -71,7 +71,7 @@ for cei in ce
     @test typeof(cei["subexpand"]["y"]) == eltype(c["subexpand"]["y"])
 end
 
-c = YAML.load_file("test.yml")
+c = MetaConfigurations.parsefile("test.yml")
 ce = MetaConfigurations.expand(c, ["subexpandlist", "y"])
 @test typeof(ce) <: Array
 @test length(ce) == length(c["subexpandlist"][1]["y"]) + 1 # +1 because 'nothing' in item 2
@@ -80,7 +80,7 @@ for cei in ce
 end
 
 # test property interpolation
-c = YAML.load_file("test.yml")
+c = MetaConfigurations.parsefile("test.yml")
 @test MetaConfigurations.interpolate(c, "inter") == "blaw-blaw"
 @test MetaConfigurations.interpolate(c, "multi") == "blaw-blaw-blaw"
 @test_throws ErrorException MetaConfigurations.interpolate(c, "kwarg") # argument missing
