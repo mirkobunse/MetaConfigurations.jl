@@ -119,16 +119,30 @@ _INTERPOLATE_DOC = """
     interpolate(configuration, property; kwargs...)
     interpolate!(configuration, property; kwargs...)
 
-Interpolate the value of a `property` in some `configuration` with the values referenced therein.
+Interpolation substitutes all placeholders in the `property` with the corresponding values
+of other properties in the same `configuration`.
 
-For example, if the `configuration` specifies two properties `prop: "\$(foo)bar"` and
-`foo: "bar"`, interpolating the value of `foo` into `prop` yields `prop: "barbar"`. Namely,
-`\$(foo)` has been replaced by the value of `foo`. If only `prop: "\$(foo)bar"` is given but
-no property `foo` is configured, you can specify it as a keyword argument, calling
-`interpolate(conf, "prop", foo="bar")`, which yields the same result. In any case, `prop`
-has to refer to `foo` with a dollar sign and enclosing brackets (`\$(foo)`).
+# Details
 
-The `property` may be a vector specifying a root-to-leaf path in the configuration tree.
+A placeholder of another property `p` must start with a dollar sign and wrap the
+name of that property in parantheses: `\$(p)`.
+
+Nested configurations are interpolated by specifying their path as a vector `property`.
+For instance, `["foo", "bar"]` will interpolate the property `bar`,
+which is nested in the property `foo`.
+
+Keyword arguments allow to substitute placeholders with arbitrary values,
+in addition to the substition with values of existing properties.
+
+# Examples
+
+    cfg = Dict("a" => 1, "b" => "Here, a is \$(a)")
+    interpolate!(cfg, "b")
+    cfg
+
+    # Dict{String,Any} with 2 entries:
+    #  "a" => 1
+    #  "b" => "Here, a is 1"
 """
 @doc _INTERPOLATE_DOC interpolate
 @doc _INTERPOLATE_DOC interpolate!
@@ -141,7 +155,7 @@ function interpolate(conf::AbstractDict, property::AbstractVector; kwargs...)
         elseif haskey(kwargs, Symbol(s))
             kwargs[Symbol(s)]
         else
-            error("Key $s not in config and not supplied as keyword argument.")
+            error("Key $s not in config and not supplied as a keyword argument.")
         end
     end)
 end
@@ -157,15 +171,27 @@ interpolate!(conf::AbstractDict, property::Any; kwargs...) =
 
 
 """
-    expand(configuration, property)
+    expand(configuration, property...)
 
-Expand the values of a `configuration` with the content of a `property` specified therein.
+Expansion a vector-valued property `p` with length `n` will result in a vector of `n`
+configurations, in each of which `p` has only one of its initial values.
 
-Expansion means that if the `property` is a vector with multiple elements, each element
-defines a copy of the configuration where only this element is stored in the `property`.
-Thus, a vector of configurations is returned, with all elements similar to the original
-`configuration` but each containing another value of the `property`. The `property` may be
-a vector specifying a root-to-leaf path in the configuration tree.
+# Details
+
+Nested configurations are expanded by specifying their path as a vector `property`.
+For instance, `["foo", "bar"]` will expand the property `bar`,
+which is nested in the property `foo`.
+
+The expansion of multiple properties is taken out sequentially.
+
+# Examples
+
+    cfg = Dict("a" => [1, 2], "b" => -1)
+    expand(cfg, "a")
+
+    # 2-element Array{Dict{Any,Any},1}:
+    #  Dict("a" => 1, "b" => -1)
+    #  Dict("a" => 2, "b" => -1)
 """
 expand(config::AbstractDict, property::Any) =
     [ Dict{Any,Any}(config..., property => v) for v in _getindex(config, property) ]
