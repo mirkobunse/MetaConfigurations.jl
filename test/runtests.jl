@@ -6,7 +6,6 @@ c = MetaConfigurations.parsefile("test.yml") # load the test file
 @test eltype(c["array"]) <: Int
 @test typeof(c["complexarray"]) <: Array
 @test eltype(c["complexarray"]) <: Dict
-@test c == MetaConfigurations.parsefile("test.yaml") # extension must not matter (same file)
 
 function testexpansion(c::Dict{Any,Any}, expand::String, remain::String)
     if (!(typeof(c[expand]) <: Array)) error("Only array properties can be tested!") end
@@ -36,17 +35,13 @@ c = MetaConfigurations.patch(
 
 # test writing to files by parsing and checking the output
 c = MetaConfigurations.parsefile("test.yml")
-filename = tempname() * ".yml"
-MetaConfigurations.save(filename, c) # write to a temporary file
-parsed = MetaConfigurations.parsefile(filename)
-rm(filename) # cleanup
-@test parsed == c
-
-filename = tempname() * ".json" # the same for JSON
-MetaConfigurations.save(filename, c)
-parsed = MetaConfigurations.parsefile(filename)
-rm(filename) # cleanup
-@test parsed == c
+@testset for extension in [".yml", ".yaml", ".json"]
+    filename = tempname() * extension
+    MetaConfigurations.save(filename, c) # write to a temporary file
+    parsed = MetaConfigurations.parsefile(filename)
+    @test parsed == c
+    rm(filename) # cleanup
+end
 
 # test sub-expansion
 c = MetaConfigurations.parsefile("test.yml")
