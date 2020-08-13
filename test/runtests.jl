@@ -6,6 +6,7 @@ c = MetaConfigurations.parsefile("test.yml") # load the test file
 @test eltype(c["array"]) <: Int
 @test typeof(c["complexarray"]) <: Array
 @test eltype(c["complexarray"]) <: Dict
+@test c == MetaConfigurations.parsefile("test.yaml") # extension must not matter (same file)
 
 function testexpansion(c::Dict{Any,Any}, expand::String, remain::String)
     if (!(typeof(c[expand]) <: Array)) error("Only array properties can be tested!") end
@@ -33,31 +34,10 @@ c = MetaConfigurations.patch(
 @test c["b"] == "5"
 @test c["c"] == [1, 2, 3]
 
-# test writing to files by parsing the output back again
+# test writing to files by parsing and checking the output
 c = MetaConfigurations.parsefile("test.yml")
 filename = tempname() * ".yml"
-YAML.write_file(filename, c) # write to temporary file
-parsed = MetaConfigurations.parsefile(filename)
-rm(filename) # cleanup
-@test parsed == c
-
-# test writing to files with prefix
-c = MetaConfigurations.parsefile("test.yml")
-filename = tempname() * ".yml"
-prfx = """
-# this is a multiline
-# comment prefix
-"""
-YAML.write_file(filename, c, prfx)
-for (i, l) in enumerate(eachline(filename))
-    if i == 1
-        @test chomp(l) == "# this is a multiline"
-    elseif i == 2
-        @test chomp(l) == "# comment prefix"
-    else
-        break
-    end
-end
+MetaConfigurations.save(filename, c) # write to a temporary file
 parsed = MetaConfigurations.parsefile(filename)
 rm(filename) # cleanup
 @test parsed == c

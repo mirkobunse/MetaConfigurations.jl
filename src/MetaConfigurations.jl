@@ -70,6 +70,30 @@ parsefile(::FileType{x}, filename::AbstractString) where x =
 
 
 """
+    save(filename, configuration)
+
+Write the `configuration` to a file.
+
+Writing a file requires a corresponding writer package,
+like `YAML.jl` or `JSON.jl`, to be loaded.
+To which writer `save` delegates depends on the `filename` extension.
+
+# Examples
+
+    using MetaConfigurations
+    save("foobar.yml", Dict("a" => 1, "b" => 2)) # breaks
+
+    using YAML
+    save("foobar.yml", Dict("a" => 1, "b" => 2)) # now it works
+"""
+save(filename::AbstractString, configuration::AbstractDict) =
+    save(filetype(filename), filename, configuration)
+
+save(::FileType{x}, filename::AbstractString, configuration::AbstractDict) where x =
+    throw(ArgumentError("No writer loaded for the file name extension .$x"))
+
+
+"""
     patch(configuration, pair_patches...; kwarg_patches...)
 
 Each of the patch arguments defines an additional key-value pair
