@@ -5,9 +5,9 @@ c = MetaConfigurations.parsefile("test.yml") # load the test file
 @test typeof(c["array"]) <: Array
 @test eltype(c["array"]) <: Int
 @test typeof(c["complexarray"]) <: Array
-@test eltype(c["complexarray"]) <: Dict
+@test eltype(c["complexarray"]) == Dict{String,Any}
 
-function testexpansion(c::Dict{Any,Any}, expand::String, remain::String)
+function testexpansion(c::Dict{String,Any}, expand::String, remain::String)
     if (!(typeof(c[expand]) <: Array)) error("Only array properties can be tested!") end
     ce = MetaConfigurations.expand(c, expand)
     @test typeof(ce) <: Array             # expansion was performed
@@ -40,6 +40,9 @@ c = MetaConfigurations.parsefile("test.yml")
     MetaConfigurations.save(filename, c) # write to a temporary file
     parsed = MetaConfigurations.parsefile(filename)
     @test parsed == c
+    @test typeof(MetaConfigurations.parsefile(
+        filename; dicttype=Dict{Symbol,Any})
+    ) == Dict{Symbol,Any} # test parsing of another dicttype
     rm(filename) # cleanup
 end
 

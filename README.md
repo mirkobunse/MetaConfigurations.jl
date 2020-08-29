@@ -58,7 +58,7 @@ beta:
 The desired list of experiments is obtained from this meta-configuration by expansions and String interpolations:
 
 ```julia
-using MetaConfigurations, YAML
+using MetaConfigurations
 configurations = expand(
     parsefile("example.yml"), # read the above meta-configuration
     "alpha",
@@ -96,14 +96,11 @@ patch.(configurations; gamma=1000)
 
 MetaConfigurations.jl is also a meta-package that unifies the APIs
 of [JSON.jl](https://github.com/JuliaIO/JSON.jl) and [YAML.jl](https://github.com/JuliaData/YAML.jl).
-Which backend is required for an operation is automatically determined from the file name extension.
+To which backend an operation is delegated is automatically determined from the file name extension.
 
 ```julia
 using MetaConfigurations
-import YAML, JSON
 
 cfg = parsefile("example.yml") # read from a YAML file
 save("example.json", cfg) # store it as a JSON file
 ```
-
-Note that you need to explicitly load the backends you want to use.
