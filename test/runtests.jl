@@ -1,4 +1,4 @@
-using MetaConfigurations, Test, YAML, JSON
+using MetaConfigurations, Test
 
 # expand the properties 'array' and 'complexarray' in the test configuration
 c = MetaConfigurations.parsefile("test.yml") # load the test file

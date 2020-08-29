@@ -1,19 +1,19 @@
 name = "MetaConfigurations"
 uuid = "b3204efc-440b-4852-a818-08d33e4dcc95"
 authors = ["Mirko Bunse <mirko.bunse@cs.tu-dortmund.de>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-Requires = "1.0"
+JSON = "0.21"
+YAML = "^0.4.2"
 julia = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
-JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 
 [targets]
-test = ["Test", "YAML", "JSON"]
+test = ["Test"]

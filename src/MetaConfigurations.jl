@@ -21,78 +21,9 @@
 # 
 module MetaConfigurations
 
-using Requires
 export parsefile, save, patch, expand, interpolate, interpolate!
 
-
-# load dynamic dependencies
-function __init__()
-    @require YAML="ddb6d928-2868-570f-bddf-ab3f9cf99eb6" include("yaml.jl")
-    @require JSON="682c06a0-de6a-54ab-a142-c8b1cf79cde6" include("json.jl")
-end
-
-
-# a value type that used to dispatch on file name extensions
-struct FileType{x} end
-FileType(x::Symbol) = FileType{x}()
-
-function filetype(filename::AbstractString)
-    extension_split = split(basename(filename), ".")
-    if length(extension_split) < 2
-        throw(ArgumentError("filename=\"$filename\" has no extension"))
-    end
-    extension = lowercase(extension_split[end])
-    return FileType(Symbol(extension))
-end
-
-
-"""
-    parsefile(filename)
-
-Parse a configuration file into a nested `Dict`.
-
-Parsing a file requires a corresponding parser package,
-like `YAML.jl` or `JSON.jl`, to be loaded.
-To which parser `parsefile` delegates depends on the `filename` extension.
-
-# Examples
-
-    using MetaConfigurations
-    cfg = parsefile("foobar.yml") # breaks
-
-    using YAML
-    cfg = parsefile("foobar.yml") # now it works
-"""
-parsefile(filename::AbstractString) =
-    parsefile(filetype(filename), filename)
-
-parsefile(::FileType{x}, filename::AbstractString) where x =
-    throw(ArgumentError("No parser loaded for the file name extension .$x"))
-
-
-"""
-    save(filename, configuration)
-
-Write the `configuration` to a file.
-
-Writing a file requires a corresponding writer package,
-like `YAML.jl` or `JSON.jl`, to be loaded.
-To which writer `save` delegates depends on the `filename` extension.
-
-# Examples
-
-    using MetaConfigurations
-    save("foobar.yml", Dict("a" => 1, "b" => 2)) # breaks
-
-    using YAML
-    save("foobar.yml", Dict("a" => 1, "b" => 2)) # now it works
-"""
-save(filename::AbstractString, configuration::AbstractDict) =
-    save(filetype(filename), filename, configuration)
-
-save(::FileType{x}, filename::AbstractString, configuration::AbstractDict) where x =
-    throw(ArgumentError("No writer loaded for the file name extension .$x"))
-
+include("io.jl")
 
 """
     patch(configuration, pair_patches...; kwarg_patches...)
