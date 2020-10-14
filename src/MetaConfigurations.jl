@@ -125,7 +125,7 @@ The expansion of multiple properties is taken out sequentially.
     #  Dict("a" => 2, "b" => -1)
 """
 expand(config::AbstractDict, property::Any) =
-    [ Dict{Any,Any}(config..., property => v) for v in _getindex(config, property) ]
+    [ typeof(config)(config..., property => v) for v in _getindex(config, property) ]
 
 # deeper in the configuration tree, it gets slightly more complex
 expand(config::AbstractDict, property::AbstractVector) =
