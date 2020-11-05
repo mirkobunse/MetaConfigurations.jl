@@ -42,9 +42,13 @@ No matter which syntax is used, all additional keys are being converted to `Stri
     patch(cfg, "-2" => -2)          # pair syntax (more versatile)
     patch(cfg, "c"=>"foo"; d="bar") # combination of both
 """
-patch(conf::AbstractDict, args::Pair...; kwargs...) =
-    Dict(conf..., args..., [eltype(keys(conf))(k) => v for (k, v) in kwargs]...)
-
+function patch(conf::AbstractDict, args::Pair...; kwargs...)
+    key_type = eltype(keys(conf)) # ensure the key type is preserved
+    val_type = promote_type(eltype(values(conf)), eltype(last.(args)))
+    return Dict{key_type,val_type}(
+        conf..., args..., [eltype(keys(conf))(k) => v for (k, v) in kwargs]...
+    ) # the value type might become more general
+end
 
 _INTERPOLATE_DOC = """
     interpolate(configuration, property; kwargs...)

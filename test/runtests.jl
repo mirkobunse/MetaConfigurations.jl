@@ -49,6 +49,14 @@ c = MetaConfigurations.patch(
 @test c[:b] == "5"
 @test c[:c] == [1, 2, 3]
 
+# ...and for maintaining value types
+p = Dict{Symbol, Any}(:foo => [1, 2], :bar => [3, 4]) # explicit Any instead of Vector{Int64}
+c = MetaConfigurations.patch(
+    p,
+    bat = [0, 0, 0]
+)
+@test typeof(c) == typeof(p)
+
 # test writing to files by parsing and checking the output
 c = MetaConfigurations.parsefile("test.yml")
 @testset for extension in [".yml", ".yaml", ".json"]
