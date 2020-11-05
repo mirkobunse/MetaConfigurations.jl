@@ -36,6 +36,19 @@ c = MetaConfigurations.patch(
 @test c["c"] == [1, 2, 3]
 @test typeof(c) == typeof(p)
 
+# ...and the same with Symbol keys
+p = MetaConfigurations.parsefile("test.yml", dicttype=Dict{Symbol, Any})
+c = MetaConfigurations.patch(
+    p,
+    a = 3,
+    b = "5",
+    c = [1, 2, 3]
+)
+@test typeof(c) == typeof(p)
+@test c[:a] == 3
+@test c[:b] == "5"
+@test c[:c] == [1, 2, 3]
+
 # test writing to files by parsing and checking the output
 c = MetaConfigurations.parsefile("test.yml")
 @testset for extension in [".yml", ".yaml", ".json"]
@@ -79,4 +92,4 @@ c = MetaConfigurations.parsefile("test.yml")
 @test c["inter"] == "blaw-\$(simple)" # the above interpolation is not taken out in-place
 MetaConfigurations.interpolate!(c, "inter")
 @test c["inter"] == "blaw-blaw" # now it is
-@test typeof(c) == typeof(p) # test type stability
+@test typeof(c) == typeof(MetaConfigurations.parsefile("test.yml")) # test type stability
