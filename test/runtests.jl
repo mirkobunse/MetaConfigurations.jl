@@ -1,4 +1,4 @@
-using MetaConfigurations, Test
+using MetaConfigurations, OrderedCollections, Test
 
 # expand the properties 'array' and 'complexarray' in the test configuration
 c = MetaConfigurations.parsefile("test.yml") # load the test file
@@ -54,6 +54,16 @@ p = Dict{Symbol, Any}(:foo => [1, 2], :bar => [3, 4]) # explicit Any instead of 
 c = MetaConfigurations.patch(
     p,
     bat = [0, 0, 0]
+)
+@test typeof(c) == typeof(p)
+
+# ...and with other Dict types
+p = MetaConfigurations.parsefile("test.yml", dicttype=OrderedDict{Symbol, Any})
+c = MetaConfigurations.patch(
+    p,
+    a = 3,
+    b = "5",
+    c = [1, 2, 3]
 )
 @test typeof(c) == typeof(p)
 
