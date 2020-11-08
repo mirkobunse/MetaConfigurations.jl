@@ -104,3 +104,21 @@ using MetaConfigurations
 cfg = parsefile("example.yml") # read from a YAML file
 save("example.json", cfg) # store it as a JSON file
 ```
+
+
+## Finding properties
+
+You can recursively find properties by their key:
+
+```julia
+# continuing the introductory example, ..
+find(configurations, "description")
+```
+
+```
+4-element Array{String,1}:
+ "Experiment with α=0.1 and β=95%"
+ "Experiment with α=0.1 and β=97.5%"
+ "Experiment with α=0.01 and β=95%"
+ "Experiment with α=0.01 and β=97.5%"
+```

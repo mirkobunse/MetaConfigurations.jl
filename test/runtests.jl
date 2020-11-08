@@ -111,3 +111,18 @@ c = MetaConfigurations.parsefile("test.yml")
 MetaConfigurations.interpolate!(c, "inter")
 @test c["inter"] == "blaw-blaw" # now it is
 @test typeof(c) == typeof(MetaConfigurations.parsefile("test.yml")) # test type stability
+
+# test the find function
+c = MetaConfigurations.parsefile("test.yml")
+r = MetaConfigurations.find(c["find_integer"], "findme")
+@test eltype(r) <: Integer
+@test 1 in r
+@test 2 in r
+@test length(r) == 2
+
+c = MetaConfigurations.parsefile("test.yml", dicttype=Dict{Symbol, Any})
+r = MetaConfigurations.find(c[:find_any], :findme)
+@test eltype(r) == Any
+@test 1 in r
+@test Dict{Symbol, Any}(:a => 1, :b => 2) in r
+@test length(r) == 2

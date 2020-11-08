@@ -24,3 +24,19 @@ subexpandlist:
 inter: "blaw-$(simple)"
 multi: "blaw-$(simple)-$(simple)"
 kwarg: "blaw-$(arg)"
+
+# test the find function
+find_integer:
+  - a: -1
+    b:
+      findme: 1
+      dontfindme: X
+  - c: -1
+    d:
+      findme: 2
+      dontfindme: Y
+find_any:
+  - findme: 1
+  - findme:
+      a: 1
+      b: 2

@@ -21,9 +21,34 @@
 # 
 module MetaConfigurations
 
-export parsefile, save, patch, expand, interpolate, interpolate!
+export expand, find, interpolate, interpolate!, parsefile, patch, save
 
 include("io.jl")
+
+"""
+    find(configuration, key)
+
+Recursively find all values which are indexed by the `key` in the `configuration` tree.
+"""
+find(c::AbstractDict{K,V}, k::K) where {K, V} =
+    (r = Any[]; _find!(r, c, k); [x for x in r]) # assume Any[], then narrow the type
+find(c::AbstractVector, k::Any) =
+    (r = Any[]; _find!(r, c, k); [x for x in r])
+
+_find!(r::Vector{Any}, c::AbstractDict{K,V}, key::K) where {K, V} =
+    for (k, v) in c
+        if k == key
+            push!(r, v)
+        end
+        _find!(r, v, key)
+    end
+
+_find!(r::Vector{Any}, c::AbstractVector, key::Any) =
+    for v in c
+        _find!(r, v, key)
+    end
+
+_find!(r::Vector{Any}, c::Any, key::Any) = nothing
 
 """
     patch(configuration, pair_patches...; kwarg_patches...)
