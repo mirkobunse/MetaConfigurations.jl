@@ -69,8 +69,8 @@ c = MetaConfigurations.patch(
 
 # test writing to files by parsing and checking the output
 c = MetaConfigurations.parsefile("test.yml")
-@testset for extension in [".yml", ".yaml", ".json"]
-    filename = tempname() * extension
+t = tempname()
+@testset for filename in ["$t.yml", "$t.yaml", "$t.json"]
     MetaConfigurations.save(filename, c) # write to a temporary file
     parsed = MetaConfigurations.parsefile(filename)
     @test parsed == c
