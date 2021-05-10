@@ -105,6 +105,14 @@ cfg = parsefile("example.yml") # read from a YAML file
 save("example.json", cfg) # store it as a JSON file
 ```
 
+By default, MetaConfigurations.jl parses files into objects of the type `Dict{String,Any}`. You can change this behaviour through the `dicttype` argument, e.g. to preserve the order of the configuration file or to use `Symbol` instances as keys.
+
+```julia
+using MetaConfigurations, OrderedCollections
+
+cfg = parsefile("example.yml", dicttype=OrderedDict{Symbol, Any})
+```
+
 
 ## Finding properties
 
