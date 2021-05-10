@@ -107,26 +107,26 @@ in addition to the substition with values of existing properties.
 @doc _INTERPOLATE_DOC interpolate
 @doc _INTERPOLATE_DOC interpolate!
 
-function interpolate(conf::AbstractDict, property::AbstractVector; kwargs...)
+function interpolate(conf::AbstractDict{K,V}, property::AbstractVector{K}; kwargs...) where {K, V}
     replace(_getindex(conf, property...), r"\$\([a-zA-Z_]+\)" => s -> begin
         s = s[3:end-1] # remove leading '$' and enclosing brackets
-        if haskey(conf, s)
-            conf[s]
+        if haskey(conf, K(s))
+            conf[K(s)]
         elseif haskey(kwargs, Symbol(s))
             kwargs[Symbol(s)]
         else
-            error("Key $s not in config and not supplied as a keyword argument.")
+            error("Key $(K(s)) not in config and not supplied as a keyword argument.")
         end
     end)
 end
 
-interpolate(conf::AbstractDict, property::Any; kwargs...) =
+interpolate(conf::AbstractDict{K,V}, property::K; kwargs...) where {K, V} =
     interpolate(conf, [property]; kwargs...)
 
-interpolate!(conf::AbstractDict, property::AbstractVector; kwargs...) =
+interpolate!(conf::AbstractDict{K,V}, property::AbstractVector{K}; kwargs...) where {K, V} =
     _setindex!(conf, interpolate(conf, property; kwargs...), property...)
 
-interpolate!(conf::AbstractDict, property::Any; kwargs...) =
+interpolate!(conf::AbstractDict{K,V}, property::K; kwargs...) where {K, V} =
     interpolate!(conf, [property]; kwargs...)
 
 

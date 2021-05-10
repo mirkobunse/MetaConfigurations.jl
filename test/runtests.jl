@@ -112,6 +112,17 @@ MetaConfigurations.interpolate!(c, "inter")
 @test c["inter"] == "blaw-blaw" # now it is
 @test typeof(c) == typeof(MetaConfigurations.parsefile("test.yml")) # test type stability
 
+# interpolation with keys of type Symbol
+c = MetaConfigurations.parsefile("test.yml"; dicttype=Dict{Symbol,Any})
+@test MetaConfigurations.interpolate(c, :inter) == "blaw-blaw"
+@test MetaConfigurations.interpolate(c, :multi) == "blaw-blaw-blaw"
+@test_throws ErrorException MetaConfigurations.interpolate(c, :kwarg)
+@test MetaConfigurations.interpolate(c, :kwarg, arg="X") == "blaw-X"
+@test c[:inter] == "blaw-\$(simple)"
+MetaConfigurations.interpolate!(c, :inter)
+@test c[:inter] == "blaw-blaw"
+@test typeof(c) == typeof(MetaConfigurations.parsefile("test.yml"; dicttype=Dict{Symbol,Any}))
+
 # test the find function
 c = MetaConfigurations.parsefile("test.yml")
 r = MetaConfigurations.find(c["find_integer"], "findme")
