@@ -23,6 +23,17 @@ end
 testexpansion(c, "array", "complexarray")
 testexpansion(c, "complexarray", "array")
 
+# ensure that the expansion is free of side effects
+c = Dict{Symbol,Any}(
+    :expansion => [true, false], # we will expand on this value
+    :outer => Dict{Symbol,Any}(
+        :inner => "foo" # and we will replace this value
+    )
+)
+ce = MetaConfigurations.expand(c, :expansion)
+ce[1][:outer][:inner] = "bar" # set value
+@test ce[2][:outer][:inner] == "foo" # check absence of side effects
+
 # test patching
 p = MetaConfigurations.parsefile("test.yml")
 c = MetaConfigurations.patch(
