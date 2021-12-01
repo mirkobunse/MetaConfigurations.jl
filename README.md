@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/mirkobunse/MetaConfigurations.jl/workflows/CI/badge.svg)](https://github.com/mirkobunse/MetaConfigurations.jl/actions) [![codecov](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl)
+[![Build Status](https://github.com/mirkobunse/MetaConfigurations.jl/workflows/CI/badge.svg)](https://github.com/mirkobunse/MetaConfigurations.jl/actions) [![codecov](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/mirkobunse/MetaConfigurations.jl)
 
 # MetaConfigurations.jl
 
